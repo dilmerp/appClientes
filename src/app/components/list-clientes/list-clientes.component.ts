@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-//import * as ngxToastr from 'ngx-toastr';
+
 
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { RouteConfigLoadEnd } from '@angular/router';
+
+export let promedioEdad: number = 0;
 
 //<Dilmer Palomino Pardo - 20211217>
 
@@ -19,8 +22,7 @@ export const MY_DATE_FORMATS = {
   },
 }
 
-
-// import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+//var promedio=0;
 
 import { Observable } from 'rxjs';
 import { ClienteService } from 'src/app/services/cliente.service';
@@ -37,12 +39,12 @@ import { ClienteService } from 'src/app/services/cliente.service';
 
 export class ListClientesComponent implements OnInit {
   clientes: any[] = [];
-
  constructor(private _ClienteService: ClienteService ) {
 
 }
 
   ngOnInit(): void {
+
       this.getClientes()
   }
 
@@ -59,26 +61,34 @@ export class ListClientesComponent implements OnInit {
      });
    }
 
-  edadpromedio():any {
-  let promedio:number =0;
+   
+ edadpromedio():any {
+  let promedio:number=0;
+  
+
     for (let cliente of this.clientes){
-           promedio = promedio + parseInt(cliente["edad"]);
+           promedio = promedio + parseFloat(cliente["edad"]);
     }
-      promedio =promedio / this.clientes.length;
-    
-      return Math.round(promedio);   
+      promedio = promedio / this.clientes.length;
+      promedioEdad=promedio;
+      return promedio.toFixed(2); 
   }
 
-  deEdad():any {
-    let promedio:number =0;
+  DesviacionStandar():any {
+    let sumatoria:number=0;
+    let varianza:number=0;
+
+    let n:number =this.clientes.length;
+
+    for (let i=0; i<n;i++){
       for (let cliente of this.clientes){
-             promedio = promedio + parseInt(cliente["edad"]);
+        sumatoria=Math.pow(parseFloat(cliente["edad"]) - promedioEdad,2);
+        varianza = varianza + sumatoria;
       }
-        promedio =promedio / this.clientes.length;
-      
-        return Math.round(promedio);   
-    }
+      varianza = varianza / n;
+    }   
 
-
-
+    return Math.sqrt(varianza).toFixed(2);
+    
+  }
 }
